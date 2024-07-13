@@ -29,7 +29,7 @@ export const router = createBrowserRouter([
         element: <PrivateRoute><Dashboard /></PrivateRoute>,
         children: [
           { path: 'cart', element: <Cart /> },
-          { path: 'users', element: <AllUsers /> } // admin route
+          { path: '/dashboard/users', element: <AllUsers /> } // admin route
         ]
       }
     ]

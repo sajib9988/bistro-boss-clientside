@@ -13,9 +13,6 @@ import { createContext, useEffect, useState } from 'react';
 import auth from "./Firebase.config";
 import axiosPublic from "../Hooks/axiosPublic";
 
-
-
-
 // 1. Create and Export Auth Context
 export const AuthContext = createContext(null);
 
@@ -51,7 +48,7 @@ const AuthProvider = ({ children }) => {
 
     const logOut = async () => {
         setLoading(true);
-     signOut(auth);
+        await signOut(auth);
         setLoading(false);
     }
 
@@ -64,26 +61,28 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
-            if (currentUser) {
-                // get token and store client
-                const userInfo = { email: currentUser.email };
-                axiosPublic.post('/jwt', userInfo)
-                    .then(res => {
-                        if (res.data.token) {
-                            localStorage.setItem('access-token', res.data.token);
-                        }
-                    })
-            }
-            else {
-                // TODO: remove token (if token stored in the client side: Local storage, caching, in memory)
-                localStorage.removeItem('access-token');
-            }
+            // if (currentUser) {
+            //     // Get token and store client
+            //     const userInfo = { email: currentUser.email };
+            //     axiosPublic.post('/jwt', userInfo)
+            //         .then(res => {
+            //             if (res.data.token) {
+            //                 localStorage.setItem('access-token', res.data.token);
+            //             }
+            //         })
+            //         .catch(err => {
+            //             console.error('Error fetching token:', err);
+            //         });
+            // } else {
+            //     // Remove token if not authenticated
+            //     localStorage.removeItem('access-token');
+            // }
             setLoading(false);
         });
-        return () => {
-            return unsubscribe();
-        }
-    }, [axiosPublic])
+
+        return () => unsubscribe();
+    }, []);
+
     // 6. Context Value
     const authInfo = { 
         user, 
@@ -107,5 +106,5 @@ const AuthProvider = ({ children }) => {
 export default AuthProvider;
 
 AuthProvider.propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node.isRequired
 }
