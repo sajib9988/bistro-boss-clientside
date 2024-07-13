@@ -1,17 +1,18 @@
-import { 
-    GoogleAuthProvider, 
-    createUserWithEmailAndPassword, 
-    onAuthStateChanged, 
-    signInWithEmailAndPassword, 
-    signInWithPopup, 
-    signOut, 
-    updateProfile 
+import {
+    GoogleAuthProvider,
+    createUserWithEmailAndPassword,
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut,
+    updateProfile
 } from "firebase/auth";
 import PropTypes from 'prop-types';
 import { createContext, useEffect, useState } from 'react';
 
 import auth from "./Firebase.config";
-import axiosPublic from "../Hooks/axiosPublic";
+// import axiosPublic from "../Hooks/axiosPublic";
+import useAxiosPublic from "../Hooks/axiosPublic";
 
 // 1. Create and Export Auth Context
 export const AuthContext = createContext(null);
@@ -21,6 +22,7 @@ const googleProvider = new GoogleAuthProvider();
 // const facebookProvider = new FacebookAuthProvider();
 
 const AuthProvider = ({ children }) => {
+    const axiosPublic = useAxiosPublic();
     // 3. State Management
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -61,33 +63,34 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
-            // if (currentUser) {
-            //     // Get token and store client
-            //     const userInfo = { email: currentUser.email };
-            //     axiosPublic.post('/jwt', userInfo)
-            //         .then(res => {
-            //             if (res.data.token) {
-            //                 localStorage.setItem('access-token', res.data.token);
-            //             }
-            //         })
-            //         .catch(err => {
-            //             console.error('Error fetching token:', err);
-            //         });
-            // } else {
-            //     // Remove token if not authenticated
-            //     localStorage.removeItem('access-token');
-            // }
-            setLoading(false);
+            if (currentUser) {
+                // get token and store client
+                const userInfo = { email: currentUser.email };
+                axiosPublic.post('/jwt', userInfo)
+                    .then(res => {
+                        console.log('res',res);
+                        if (res.data.token) {
+                            localStorage.setItem('access-token', res.data.token);
+                            setLoading(false);
+                        }
+                    })
+            }
+            else {
+                // TODO: remove token (if token stored in the client side: Local storage, caching, in memory)
+                localStorage.removeItem('access-token');
+                setLoading(false);
+            }
         });
-
-        return () => unsubscribe();
-    }, []);
+        return () => {
+            return unsubscribe();
+        }
+    }, [axiosPublic])
 
     // 6. Context Value
-    const authInfo = { 
-        user, 
+    const authInfo = {
+        user,
         loading,
-        createUser, 
+        createUser,
         signInUser,
         signInWithGoogle,
         // signInWithFacebook,
