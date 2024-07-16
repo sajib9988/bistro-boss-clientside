@@ -13,7 +13,7 @@ import AllUsers from '../Dashboard/AllUsers';
 import PrivateRoute from './../PrivateRoutes/PrivateRouter';
 import AdminRoute from '../PrivateRoutes/AdminRoute';
 import AddItems from '../Add & Update/AddItems'
-
+import UpdateItems from '../Add & Update/UpdateItems';
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -31,7 +31,8 @@ export const router = createBrowserRouter([
         children: [
           { path: 'cart', element: <Cart /> },
           { path: 'users', element: <AdminRoute><AllUsers /></AdminRoute> },
-          { path: 'addItems', element: <AddItems />} // Ensure this path is correct
+          { path: 'addItems', element: <AddItems />} ,// Ensure this path is correct
+          { path: 'updateItems', element: <UpdateItems></UpdateItems>} // Ensure this path is correct
         ]
       }
     ]
