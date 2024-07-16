@@ -32,7 +32,10 @@ export const router = createBrowserRouter([
           { path: 'cart', element: <Cart /> },
           { path: 'users', element: <AdminRoute><AllUsers /></AdminRoute> },
           { path: 'addItems', element: <AddItems />} ,// Ensure this path is correct
-          { path: 'updateItems', element: <UpdateItems></UpdateItems>} // Ensure this path is correct
+          { path: 'updateItems',
+             element: <UpdateItems></UpdateItems>,
+             loader: ({params}) => fetch(`http://localhost:5000/menu/${params.id}`)
+          } // Ensure this path is correct
         ]
       }
     ]
