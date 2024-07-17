@@ -14,6 +14,9 @@ import PrivateRoute from './../PrivateRoutes/PrivateRouter';
 import AdminRoute from '../PrivateRoutes/AdminRoute';
 import AddItems from '../Add & Update/AddItems'
 import UpdateItems from '../Add & Update/UpdateItems';
+import ManageItems from '../Add & Update/ManageItems';
+import Payment from '../PaymentPart/Payment';
+import PaymentHistory from './../PaymentPart/PaymentHistory';
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -29,13 +32,29 @@ export const router = createBrowserRouter([
         path: 'dashboard',
         element: <PrivateRoute><Dashboard /></PrivateRoute>,
         children: [
-          { path: 'cart', element: <Cart /> },
+          { path: 'cart',
+           element: <Cart />
+         },
           { path: 'users', element: <AdminRoute><AllUsers /></AdminRoute> },
+
           { path: 'addItems', element: <AddItems />} ,// Ensure this path is correct
-          { path: 'updateItems',
+          {
+            path: 'manageItems',
+            element: <AdminRoute><ManageItems></ManageItems></AdminRoute>
+          },
+          { path: 'updateItem/:id',
              element: <UpdateItems></UpdateItems>,
              loader: ({params}) => fetch(`http://localhost:5000/menu/${params.id}`)
-          } // Ensure this path is correct
+          } ,
+          {
+            path: 'payment',
+            element: <Payment></Payment>
+          },
+          {
+            path: 'paymentHistory',
+            element: <PaymentHistory></PaymentHistory>
+          },
+  
         ]
       }
     ]

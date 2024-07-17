@@ -1,5 +1,4 @@
-import { useLoaderData } from "react-router-dom";
-
+import { useLoaderData, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import useAxiosPublic from "../Hooks/axiosPublic";
@@ -11,51 +10,57 @@ const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
 const UpdateItem = () => {
-    const {name, category, recipe, price, _id} = useLoaderData();
+    const loaderData = useLoaderData();
+     console.log('Loader Data:', loaderData); // Log the loader data to see what it contains
+    const { name, category, recipe, price, _id } = loaderData;
+
+    
 
     const { register, handleSubmit } = useForm();
     const axiosPublic = useAxiosPublic();
     const axiosSecure = useAxiosSecure();
+
     const onSubmit = async (data) => {
-        console.log(data)
-        // image upload to imgbb and then get an url
-        const imageFile = { image: data.image[0] }
+        console.log(data);
+        // Image upload to imgbb and then get an URL
+        const imageFile = { image: data.image[0] };
         const res = await axiosPublic.post(image_hosting_api, imageFile, {
             headers: {
                 'content-type': 'multipart/form-data'
             }
         });
+
         if (res.data.success) {
-            // now send the menu item data to the server with the image url
+            // Now send the menu item data to the server with the image URL
             const menuItem = {
                 name: data.name,
                 category: data.category,
                 price: parseFloat(data.price),
                 recipe: data.recipe,
                 image: res.data.data.display_url
-            }
-            // 
+            };
+
             const menuRes = await axiosSecure.patch(`/menu/${_id}`, menuItem);
-            console.log(menuRes.data)
-            if(menuRes.data.modifiedCount > 0){
-                // show success popup
-                // reset();
+            console.log(menuRes.data);
+
+            if (menuRes.data.modifiedCount > 0) {
+                // Show success popup
                 Swal.fire({
                     position: "top-end",
                     icon: "success",
                     title: `${data.name} is updated to the menu.`,
                     showConfirmButton: false,
                     timer: 1500
-                  });
+                });
             }
         }
-        console.log( 'with image url', res.data);
+
+        console.log('With image URL', res.data);
     };
-    
-    
+
     return (
         <div>
-            <SectionTitle heading="Update an Item" subHeading="Refresh info"></SectionTitle>
+            <SectionTitle heading="Update an Item" subHeading="Refresh info" />
             <div>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-control w-full my-6">
@@ -68,10 +73,11 @@ const UpdateItem = () => {
                             placeholder="Recipe Name"
                             {...register('name', { required: true })}
                             required
-                            className="input input-bordered w-full" />
+                            className="input input-bordered w-full"
+                        />
                     </div>
                     <div className="flex gap-6">
-                        {/* category */}
+                        {/* Category */}
                         <div className="form-control w-full my-6">
                             <label className="label">
                                 <span className="label-text">Category*</span>
@@ -87,7 +93,7 @@ const UpdateItem = () => {
                             </select>
                         </div>
 
-                        {/* price */}
+                        {/* Price */}
                         <div className="form-control w-full my-6">
                             <label className="label">
                                 <span className="label-text">Price*</span>
@@ -97,11 +103,11 @@ const UpdateItem = () => {
                                 defaultValue={price}
                                 placeholder="Price"
                                 {...register('price', { required: true })}
-                                className="input input-bordered w-full" />
+                                className="input input-bordered w-full"
+                            />
                         </div>
-
                     </div>
-                    {/* recipe details */}
+                    {/* Recipe Details */}
                     <div className="form-control">
                         <label className="label">
                             <span className="label-text">Recipe Details</span>
